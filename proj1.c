@@ -90,7 +90,7 @@ int povoaLista(Aluno **lista) {
 
 
     /*Abre arquivo com nomes e matriculas, em modo leitura*/
-    arqAlunos = fopen("alunos.txt", "r");
+    arqAlunos = fopen("amigos_tag20171.txt", "r");
     if (arqAlunos == NULL) {
         printf("\nERRO: Arquivo alunos.txt nao encontrado\n");
         return -1;
