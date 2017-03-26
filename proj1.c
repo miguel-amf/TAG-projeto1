@@ -191,26 +191,28 @@ void Ordena(Aluno **lista)
 {
     int i,j;
     Aluno *temp;
+    int temp1, temp2;
+    char temp3[30], temp4[10];
     for(j=0;j<NUM_ALUNOS;j++)
     {
         for(i=j+1;i<NUM_ALUNOS;i++)
         {
             if(lista[j]->qtdAdj < lista[i]->qtdAdj)
             {
-                temp->id = lista[j]->id;
-                strcpy(temp->nome, lista[j]->nome);
-                strcpy(temp->matricula, lista[j]->matricula);
-                temp->qtdAdj = lista[j]->qtdAdj;
+                temp1 = lista[j]->id;
+                strcpy(temp3, lista[j]->nome);
+                strcpy(temp4, lista[j]->matricula);
+                temp2 = lista[j]->qtdAdj;
 
                 lista[j]->id = lista[i]->id;
                 strcpy(lista[j]->nome, lista[i]->nome);
                 strcpy(lista[j]->matricula, lista[i]->matricula);
                 lista[j]->qtdAdj = lista[i]->qtdAdj;
 
-                lista[i]->id = temp->id;
-                strcpy(lista[i]->nome, temp->nome);
-                strcpy(lista[i]->matricula, temp->matricula);
-                lista[i]->qtdAdj = temp->qtdAdj;
+                lista[i]->id = temp1;
+                strcpy(lista[i]->nome, temp3);
+                strcpy(lista[i]->matricula, temp4);
+                lista[i]->qtdAdj = temp2;
             }
         }
     }
