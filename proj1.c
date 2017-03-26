@@ -224,6 +224,6 @@ void Imprime(Aluno **lista)
         printf("id=%d\n",lista[i]->id);
         printf("nome=%s\n", lista[i]->nome);
         printf("matricula=%s\n", lista[i]->matricula);
-        printf("grau=%d\n", lista[i]->qtdAdj);
+        printf("grau=%d\n\n", lista[i]->qtdAdj);
     }
 }
