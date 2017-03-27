@@ -61,7 +61,7 @@ void Ordena(Aluno *);
 /*FUNCAO MAIN*/
 int main () {
 
-    
+
     /*declara vetor de ponteiros para Aluno*/
     Aluno *lista;
 
@@ -70,14 +70,14 @@ int main () {
     lista = calloc(NUM_ALUNOS, sizeof(Aluno));
 
     /*Procura no arquivo os vertices, colocando suas adjacencias*/
-    if (povoaLista(lista)) {
+    if (!povoaLista(lista)) {
         /*trata o erro*/
         printf("ERRO: NAO FOI POSSIVEL TRANSFERIR DO ARQUIVO PARA O PROGRAMA");
         return -1;
     };
     /*Coloca em ordem decrescente de acordo com o grau de cada vertice*/
     Ordena(lista);
-    
+
     /*Imprime na saida padrao a lista ordenada, com flag 1 vertice por linha*/
     Imprime(lista, 'l');
 
@@ -238,13 +238,13 @@ default: normal
 void Imprime(Aluno *lista, char arg)
 {
     int i;
-    
-    if (arg == 'l') 
+
+    if (arg == 'l')
     {
         printf("ID  NOME                  MATRICULA  GRAU\n");
         for(i=0;i<NUM_ALUNOS;i++)
         {
-            
+
             printf("%02d||",lista[i].id);
             printf("%-20s||", lista[i].nome);
             printf("%s||", lista[i].matricula);
@@ -259,5 +259,5 @@ void Imprime(Aluno *lista, char arg)
         printf("nome=%s\n", lista[i].nome);
         printf("matricula=%s\n", lista[i].matricula);
         printf("grau=%d\n\n", lista[i].qtdAdj);
-    }       
+    }
 }
