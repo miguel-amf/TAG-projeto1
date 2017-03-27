@@ -47,6 +47,8 @@ typedef struct
 #define NUM_ALUNOS 39
 /*define tamanho max de cada linha do arquivo alunos.txt*/
 #define TAM_LINHA 100
+/*Nome do arquivo a ser lido*/
+#define NOME_ARQUIVO "amigos_tag20171.txt"
 
 /*CABECALHO DE FUNCOES*/
 int povoaLista (Aluno *);
@@ -54,7 +56,7 @@ void pushAdj(Aluno *, int);
 void freeAdj(Adj *);
 void freeLista(Aluno *);
 void Imprime(Aluno *, char);
-void Ordena(Aluno **);
+void Ordena(Aluno *);
 
 /*FUNCAO MAIN*/
 int main () {
@@ -64,14 +66,22 @@ int main () {
     Aluno *lista;
 
 
-    /*aloca memoria necessaria para o vetor de listas, ja inicializando com null*/
+    /*aloca memoria necessaria para o vetor de Aluno, ja inicializando com null*/
     lista = calloc(NUM_ALUNOS, sizeof(Aluno));
 
-    /*Procura no arquivo os nos de alunos, sem contar adjacencia*/
-    povoaLista(lista);
-    /*Ordena(lista);*/
+    /*Procura no arquivo os vertices, colocando suas adjacencias*/
+    if (povoaLista(lista)) {
+        /*trata o erro*/
+        printf("ERRO: NAO FOI POSSIVEL TRANSFERIR DO ARQUIVO PARA O PROGRAMA");
+        return -1;
+    };
+    /*Coloca em ordem decrescente de acordo com o grau de cada vertice*/
+    Ordena(lista);
+    
+    /*Imprime na saida padrao a lista ordenada, com flag 1 vertice por linha*/
     Imprime(lista, 'l');
 
+    /*desaloca a memoria utilizada*/
     freeLista(lista);
     return 0;
 
@@ -91,7 +101,7 @@ int povoaLista(Aluno *lista) {
 
 
     /*Abre arquivo com nomes e matriculas, em modo leitura*/
-    arqAlunos = fopen("amigos_tag20171.txt", "r");
+    arqAlunos = fopen(NOME_ARQUIVO, "r");
     if (arqAlunos == NULL) {
         printf("\nERRO: Arquivo alunos.txt nao encontrado\n");
         return -1;
@@ -185,32 +195,34 @@ void freeLista(Aluno *lista) {
     free(lista);
 
 }
-
-void Ordena(Aluno **lista)
+/*
+Utiliza o algoritmo bubblesort, pela simplicidade de implementacao
+*/
+void Ordena(Aluno *lista)
 {
     int i,j;
-    int temp1, temp2;
-    char temp3[30], temp4[10];
+    int idTemp, qtdAdjTemp;
+    char nomeTemp[30], matriculaTemp[10];
     for(j=0;j<NUM_ALUNOS;j++)
     {
         for(i=j+1;i<NUM_ALUNOS;i++)
         {
-            if(lista[j]->qtdAdj < lista[i]->qtdAdj)
+            if(lista[j].qtdAdj < lista[i].qtdAdj)
             {
-                temp1 = lista[j]->id;
-                strcpy(temp3, lista[j]->nome);
-                strcpy(temp4, lista[j]->matricula);
-                temp2 = lista[j]->qtdAdj;
+                idTemp = lista[j].id;
+                strcpy(nomeTemp, lista[j].nome);
+                strcpy(matriculaTemp, lista[j].matricula);
+                qtdAdjTemp = lista[j].qtdAdj;
 
-                lista[j]->id = lista[i]->id;
-                strcpy(lista[j]->nome, lista[i]->nome);
-                strcpy(lista[j]->matricula, lista[i]->matricula);
-                lista[j]->qtdAdj = lista[i]->qtdAdj;
+                lista[j].id = lista[i].id;
+                strcpy(lista[j].nome, lista[i].nome);
+                strcpy(lista[j].matricula, lista[i].matricula);
+                lista[j].qtdAdj = lista[i].qtdAdj;
 
-                lista[i]->id = temp1;
-                strcpy(lista[i]->nome, temp3);
-                strcpy(lista[i]->matricula, temp4);
-                lista[i]->qtdAdj = temp2;
+                lista[i].id = idTemp;
+                strcpy(lista[i].nome, nomeTemp);
+                strcpy(lista[i].matricula, matriculaTemp);
+                lista[i].qtdAdj = qtdAdjTemp;
             }
         }
     }
