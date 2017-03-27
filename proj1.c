@@ -17,6 +17,7 @@ MIGUEL A. MONTAGNER FILHO 13/0127302
 
 /*
 TODO: SORT POR QTDADJ
+TODO: VERIFICACAO MAIOR CLIQUE
 */
 
 
@@ -48,19 +49,19 @@ typedef struct
 #define TAM_LINHA 100
 
 /*CABECALHO DE FUNCOES*/
-int povoaLista (Aluno **);
+int povoaLista (Aluno *);
 void pushAdj(Aluno *, int);
-void freeAdj(Aluno);
-void freeLista(Aluno **);
-void Imprime(Aluno **);
+void freeAdj(Adj *);
+void freeLista(Aluno *);
+void Imprime(Aluno *, char);
 void Ordena(Aluno **);
 
 /*FUNCAO MAIN*/
 int main () {
 
-    int i = 0;
+    
     /*declara vetor de ponteiros para Aluno*/
-    Aluno **lista;
+    Aluno *lista;
 
 
     /*aloca memoria necessaria para o vetor de listas, ja inicializando com null*/
@@ -68,8 +69,8 @@ int main () {
 
     /*Procura no arquivo os nos de alunos, sem contar adjacencia*/
     povoaLista(lista);
-    Ordena(lista);
-    Imprime(lista);
+    /*Ordena(lista);*/
+    Imprime(lista, 'l');
 
     freeLista(lista);
     return 0;
@@ -78,7 +79,7 @@ int main () {
 
 
 /*Percorre o arquivo alunos.txt e povoa a lista de adjacencia*/
-int povoaLista(Aluno **lista) {
+int povoaLista(Aluno *lista) {
 
     /*declara e inicializa variaveis a serem utilizadas*/
     FILE *arqAlunos = NULL;
@@ -109,36 +110,34 @@ int povoaLista(Aluno **lista) {
     segunda condicao se ja leu todos os alunos registrados
     terceira se chegou no final do arquivo
     */
-    for(i = 0;(/*!feof(arqAlunos) &&*/ (i < NUM_ALUNOS) && fgets(linhaAtual, TAM_LINHA, arqAlunos) != NULL); i++) {
+    for(i = 0;(i < NUM_ALUNOS) && fgets(linhaAtual, TAM_LINHA, arqAlunos) != NULL; i++) {
 
         /*declara o offselinha, pois o arquivo sera lido linha a linha, e esta variavel ira funcionar como forma de apontar para o caracter a ser lido*/
         offsetLinha = 0;
 
-        /*Aloca */
-        lista[i] = malloc(sizeof(Aluno));
         /*coloca o id do aluno*/
-        lista[i]->id = i+1;
-        lista[i]->qtdAdj = 0;
-        sscanf(linhaAtual, "%[a-zA-Z ]#%9[0-9][^#]#", lista[i]->nome, lista[i]->matricula);
+        lista[i].id = i+1;
+        lista[i].qtdAdj = 0;
+        sscanf(linhaAtual, "%[a-zA-Z ]#%9[0-9][^#]#", lista[i].nome, lista[i].matricula);
         /*calcula o novo offset, dado que foi lido nome e matricula*/
 
-        printf("id=%d\n",lista[i]->id);
-        printf("nome=%s\n", lista[i]->nome);
-        printf("matricula=%s\n", lista[i]->matricula);
+        printf("id=%d\n",lista[i].id);
+        printf("nome=%s\n", lista[i].nome);
+        printf("matricula=%s\n", lista[i].matricula);
 
-        offsetLinha = strlen(lista[i]->nome) + strlen(lista[i]->matricula) + 2;
+        offsetLinha = strlen(lista[i].nome) + strlen(lista[i].matricula) + 2;
 
         /*Le os adjacentes, e sai povoando a lista de adjacencia*/
         while(sscanf(&linhaAtual[offsetLinha],"%d#", &idAdj) == 1) {
            /*Coloca o novo vertice no inicio da lista de adj*/
-           pushAdj(lista[i], idAdj);
+           pushAdj(&lista[i], idAdj);
 
-           (lista[i]->qtdAdj)++;
+           (lista[i].qtdAdj)++;
            /*anda na string para o prox valor*/
            for(;linhaAtual[offsetLinha] != '#' || strlen(&linhaAtual[offsetLinha]) == 0; offsetLinha++);
            offsetLinha++;
         }
-        printf("\nqtdAdj = %d\n#####################\n", lista[i]->qtdAdj);
+        printf("\nqtdAdj = %d\n#####################\n", lista[i].qtdAdj);
 
 
 
@@ -158,17 +157,17 @@ void pushAdj(Aluno *aluno, int id) {
     /*aponta o prox do novo vertice para o primeiro elemento da lista de adjacencia do aluno*/
     adjTemp->prox = aluno->adj;
     /*aponta primeiro elemento da lista de adj do aluno para novo vertice*/
-    aluno->adj = adjTemp;
+    aluno->adj = (Adj *)adjTemp;
 
 }
 
-void freeAdj(Aluno aluno) {
+void freeAdj(Adj *adj) {
 
-    Adj *temp = aluno.adj;
+    Adj *temp = adj;
     Adj *next = NULL;
     while (temp != NULL) {
 
-        next = temp->prox;
+        next = (Adj *)temp->prox;
         free(temp);
         temp = next;
 
@@ -176,11 +175,11 @@ void freeAdj(Aluno aluno) {
     }
 
 }
-void freeLista(Aluno **lista) {
+void freeLista(Aluno *lista) {
     int i;
     /*Libera a lista de adjacencia primeiro*/
     for(i = 0; i < NUM_ALUNOS; i++) {
-        freeAdj(*lista[i]);
+        freeAdj((Adj *)lista[i].adj);
     }
     /*Finalmente libera o vetor*/
     free(lista);
@@ -190,7 +189,6 @@ void freeLista(Aluno **lista) {
 void Ordena(Aluno **lista)
 {
     int i,j;
-    Aluno *temp;
     int temp1, temp2;
     char temp3[30], temp4[10];
     for(j=0;j<NUM_ALUNOS;j++)
@@ -217,15 +215,37 @@ void Ordena(Aluno **lista)
         }
     }
 }
+/*
+arg:
+n = normal
+l = um por linha
 
-void Imprime(Aluno **lista)
+default: normal
+*/
+
+void Imprime(Aluno *lista, char arg)
 {
     int i;
+    
+    if (arg == 'l') 
+    {
+        printf("ID  NOME                  MATRICULA  GRAU\n");
+        for(i=0;i<NUM_ALUNOS;i++)
+        {
+            
+            printf("%02d||",lista[i].id);
+            printf("%-20s||", lista[i].nome);
+            printf("%s||", lista[i].matricula);
+            printf(" %02d ||\n", lista[i].qtdAdj);
+        }
+        /*Volta para a funcao chamadora*/
+        return;
+    }
     for(i=0;i<NUM_ALUNOS;i++)
     {
-        printf("id=%d\n",lista[i]->id);
-        printf("nome=%s\n", lista[i]->nome);
-        printf("matricula=%s\n", lista[i]->matricula);
-        printf("grau=%d\n\n", lista[i]->qtdAdj);
-    }
+        printf("id=%d\n",lista[i].id);
+        printf("nome=%s\n", lista[i].nome);
+        printf("matricula=%s\n", lista[i].matricula);
+        printf("grau=%d\n\n", lista[i].qtdAdj);
+    }       
 }
