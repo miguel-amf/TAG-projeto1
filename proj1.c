@@ -57,6 +57,13 @@ void freeAdj(Adj *);
 void freeLista(Aluno *);
 void Imprime(Aluno *, char);
 void Ordena(Aluno *);
+void popAdj(Aluno *, int);
+Adj *maiorClique(Aluno *);
+int determinaMaiorGrau(Aluno *);
+void buscaClique(Aluno *, Aluno *, Adj *);
+
+int maiorGrau;
+Aluno maiorCliqueEncontrado;
 
 /*FUNCAO MAIN*/
 int main () {
@@ -64,6 +71,9 @@ int main () {
 
     /*declara vetor de ponteiros para Aluno*/
     Aluno *lista;
+    
+    /*Inicializa globais*/
+    maiorGrau = 0;
 
 
     /*aloca memoria necessaria para o vetor de Aluno, ja inicializando com null*/
@@ -75,11 +85,14 @@ int main () {
         printf("ERRO: NAO FOI POSSIVEL TRANSFERIR DO ARQUIVO PARA O PROGRAMA");
         return -1;
     };
+    
+    /*Atualiza valor do maior grau*/
+    determinaMaiorGrau(lista);
     /*Coloca em ordem decrescente de acordo com o grau de cada vertice*/
     Ordena(lista);
 
     /*Imprime na saida padrao a lista ordenada, com flag 1 vertice por linha*/
-    Imprime(lista, 'l');
+    Imprime(lista, 'l'); 
 
     /*desaloca a memoria utilizada*/
     freeLista(lista);
@@ -171,6 +184,50 @@ void pushAdj(Aluno *aluno, int id) {
 
 }
 
+void popAdj(Aluno *cabeca, int id) {
+
+    Adj *adjTemp = (Adj *) cabeca->adj;
+    Adj *adjAnterior = adjTemp;
+    
+    if(adjTemp == NULL) {
+        return;
+    }
+    
+    if (adjTemp->id == id) {
+        cabeca->adj = (Adj *) adjTemp->prox;
+        free(adjTemp);
+        cabeca->qtdAdj--;
+        return;
+    }
+    adjTemp = (Adj *) adjTemp->prox;
+    while(adjTemp != NULL) {
+        if(adjTemp->id == id) {
+            adjAnterior->prox = (Adj *) adjTemp->prox;
+            cabeca->qtdAdj--;
+            free(adjTemp);
+        } else {
+            adjAnterior = adjTemp;
+            adjTemp = (Adj *)adjTemp->prox;
+        }
+        
+    }
+
+}
+
+/*Retorna o maior grau encontrado*/
+int determinaMaiorGrau(Aluno *lista) {
+    int i, maior;
+    maior = 0;
+   
+    for(i = 0; i< NUM_ALUNOS;i++){
+        if (lista[i].qtdAdj > maior) {
+            maior = lista[i].qtdAdj;
+        }
+    }
+    maiorGrau = maior;
+    return maior;
+}
+
 void freeAdj(Adj *adj) {
 
     Adj *temp = adj;
@@ -260,4 +317,68 @@ void Imprime(Aluno *lista, char arg)
         printf("matricula=%s\n", lista[i].matricula);
         printf("grau=%d\n\n", lista[i].qtdAdj);
     }
+}
+
+Adj *maiorClique(Aluno *lista){
+
+    int i =0;
+    Aluno clique;
+    Aluno possivelClique;
+    possivelClique.adj = NULL;
+    clique.adj = NULL;
+    
+    maiorCliqueEncontrado.qtdAdj = 0;
+
+    for(i = 0; i < NUM_ALUNOS; i++){
+        /*a cabeca do clique eh zerada*/
+        clique.adj = NULL;
+        
+        /*Copia lista de adj do aluno vigente para uma nova lista*/
+        Adj *cursorAuxiliar = (Adj *) lista[i].adj;
+        while(cursorAuxiliar != NULL) {
+            pushAdj(&possivelClique, cursorAuxiliar->id);
+        }
+        /*coloca o aluno vigente ja dentro do clique*/
+        pushAdj(&clique, lista[i].id);
+        
+        buscaClique(lista, &clique, (Adj *) possivelClique.adj);       
+    
+    }
+    
+    return NULL;
+
+}
+
+void buscaClique(Aluno *lista, Aluno *clique, Adj *listaClique) {
+    
+    /*condicao de parada: nao ha mais adjacentes a serem colocados*/
+    if(listaClique == NULL) {
+        /*verifica se encontrou o maior clique ate o momento*/
+        if(clique->qtdAdj > maiorCliqueEncontrado.qtdAdj) {
+            maiorCliqueEncontrado.adj = (Adj *) clique->adj;
+            maiorCliqueEncontrado.qtdAdj = clique->qtdAdj;
+        }
+        return;        
+    }
+    
+    /*percorre listaClique, a procura de cliques que contenham cada um dele*/
+    while(listaClique != NULL){
+        Adj *cursorLista = NULL;
+        Adj *cursorClique = NULL;
+        
+        cursorLista = (Adj *) listaClique;
+        /*insere cada um da lista dentro do possivel clique e roda de novo com os novos possiveis candidatos*/
+        while(listaClique!=NULL){
+            
+        }
+        
+    
+    
+    
+    
+    
+    }
+     
+    
+    
 }
