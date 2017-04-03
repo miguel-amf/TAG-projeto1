@@ -61,6 +61,11 @@ void popAdj(Aluno *, int);
 Adj *maiorClique(Aluno *);
 int determinaMaiorGrau(Aluno *);
 void buscaClique(Aluno *, Aluno *, Adj *);
+int verificaAmizade(Aluno *, int, int);
+void imprimeAdjNo(Adj *);
+void imprimeAdj(Aluno);
+Adj *pushAdjNo(Adj *, int);
+Adj *popAdjNo(Adj *, int);
 
 int maiorGrau;
 Aluno maiorCliqueEncontrado;
@@ -74,6 +79,13 @@ int main () {
     
     /*Inicializa globais*/
     maiorGrau = 0;
+    
+    maiorCliqueEncontrado.nome[0] = 'M';
+    maiorCliqueEncontrado.nome[1] = '\0';
+    maiorCliqueEncontrado.qtdAdj = 0;
+    maiorCliqueEncontrado.adj = NULL;
+    maiorCliqueEncontrado.id = 0;
+    maiorCliqueEncontrado.matricula[0] = '\0';
 
 
     /*aloca memoria necessaria para o vetor de Aluno, ja inicializando com null*/
@@ -86,13 +98,19 @@ int main () {
         return -1;
     };
     
+
     /*Atualiza valor do maior grau*/
-    determinaMaiorGrau(lista);
-    /*Coloca em ordem decrescente de acordo com o grau de cada vertice*/
+    determinaMaiorGrau(lista); 
+
+    maiorClique(lista);
+    /*Coloca em ordem decrescente de acordo com o grau de cada vertice* /
+    
+    
     Ordena(lista);
 
-    /*Imprime na saida padrao a lista ordenada, com flag 1 vertice por linha*/
-    Imprime(lista, 'l'); 
+    /*Imprime na saida padrao a lista ordenada, com flag 1 vertice por linha* /
+    Imprime(lista, 'l');
+    
 
     /*desaloca a memoria utilizada*/
     freeLista(lista);
@@ -134,7 +152,7 @@ int povoaLista(Aluno *lista) {
     terceira se chegou no final do arquivo
     */
     for(i = 0;(i < NUM_ALUNOS) && fgets(linhaAtual, TAM_LINHA, arqAlunos) != NULL; i++) {
-
+    
         /*declara o offselinha, pois o arquivo sera lido linha a linha, e esta variavel ira funcionar como forma de apontar para o caracter a ser lido*/
         offsetLinha = 0;
 
@@ -144,9 +162,7 @@ int povoaLista(Aluno *lista) {
         sscanf(linhaAtual, "%[a-zA-Z ]#%9[0-9][^#]#", lista[i].nome, lista[i].matricula);
         /*calcula o novo offset, dado que foi lido nome e matricula*/
 
-        printf("id=%d\n",lista[i].id);
-        printf("nome=%s\n", lista[i].nome);
-        printf("matricula=%s\n", lista[i].matricula);
+
 
         offsetLinha = strlen(lista[i].nome) + strlen(lista[i].matricula) + 2;
 
@@ -160,7 +176,6 @@ int povoaLista(Aluno *lista) {
            for(;linhaAtual[offsetLinha] != '#' || strlen(&linhaAtual[offsetLinha]) == 0; offsetLinha++);
            offsetLinha++;
         }
-        printf("\nqtdAdj = %d\n#####################\n", lista[i].qtdAdj);
 
 
 
@@ -176,7 +191,6 @@ void pushAdj(Aluno *aluno, int id) {
 
     /*coloca valor do id*/
     adjTemp->id = id;
-    printf("->%d", id);
     /*aponta o prox do novo vertice para o primeiro elemento da lista de adjacencia do aluno*/
     adjTemp->prox = aluno->adj;
     /*aponta primeiro elemento da lista de adj do aluno para novo vertice*/
@@ -322,63 +336,191 @@ void Imprime(Aluno *lista, char arg)
 Adj *maiorClique(Aluno *lista){
 
     int i =0;
-    Aluno clique;
-    Aluno possivelClique;
-    possivelClique.adj = NULL;
-    clique.adj = NULL;
+    Aluno *clique = malloc(sizeof(Aluno));
+    Aluno *possivelClique = malloc(sizeof(Aluno));
+    possivelClique->adj = NULL;
+    clique->adj = NULL;
+    
+    possivelClique->qtdAdj = 0;
+    clique->qtdAdj = 0;
     
     maiorCliqueEncontrado.qtdAdj = 0;
 
     for(i = 0; i < NUM_ALUNOS; i++){
         /*a cabeca do clique eh zerada*/
-        clique.adj = NULL;
-        
+        clique->adj = NULL;
         /*Copia lista de adj do aluno vigente para uma nova lista*/
         Adj *cursorAuxiliar = (Adj *) lista[i].adj;
+        printf("\nTestando adjs de %s: \nPossivel clique:", lista[i].nome);
         while(cursorAuxiliar != NULL) {
-            pushAdj(&possivelClique, cursorAuxiliar->id);
+            pushAdj(possivelClique, cursorAuxiliar->id);
+            cursorAuxiliar = cursorAuxiliar->prox;
         }
+        imprimeAdj(*possivelClique);
         /*coloca o aluno vigente ja dentro do clique*/
-        pushAdj(&clique, lista[i].id);
+        printf("\nclique:");
+        pushAdj(clique, lista[i].id);
+        imprimeAdj(*clique);
+        printf("\n");
         
-        buscaClique(lista, &clique, (Adj *) possivelClique.adj);       
+        buscaClique(lista, clique, (Adj *) possivelClique->adj);       
     
     }
+    
+    printf("MaiorClique: ");
+    imprimeAdj(maiorCliqueEncontrado);
+    printf("\n");
     
     return NULL;
 
 }
 
 void buscaClique(Aluno *lista, Aluno *clique, Adj *listaClique) {
-    
+    printf("\n###########\nproxima iteracao:\nlistaClique: ");
+    imprimeAdjNo(listaClique);
+    printf("\nClique: ");
+    imprimeAdj(*clique);
+   
+    printf("\n");
     /*condicao de parada: nao ha mais adjacentes a serem colocados*/
     if(listaClique == NULL) {
-        /*verifica se encontrou o maior clique ate o momento*/
+        printf("Esta iteracao eh folha, dando backtrack\n##########\n");
+        
+        /*verifica se encontrou o maior clique ate o momento* /
         if(clique->qtdAdj > maiorCliqueEncontrado.qtdAdj) {
             maiorCliqueEncontrado.adj = (Adj *) clique->adj;
             maiorCliqueEncontrado.qtdAdj = clique->qtdAdj;
-        }
+        }*/
+        
         return;        
     }
     
     /*percorre listaClique, a procura de cliques que contenham cada um dele*/
+    Adj *novaListaClique = NULL;
+    Adj *cursorLista = listaClique->prox;
     while(listaClique != NULL){
-        Adj *cursorLista = NULL;
-        Adj *cursorClique = NULL;
         
-        cursorLista = (Adj *) listaClique;
-        /*insere cada um da lista dentro do possivel clique e roda de novo com os novos possiveis candidatos*/
-        while(listaClique!=NULL){
-            
+        novaListaClique = NULL;
+        /*Adj *cursorClique = NULL;*/
+        printf("Coloca no clique: %d", listaClique->id);
+        /*coloca como possivel participante do clique*/
+        pushAdj(clique, listaClique->id);
+        clique->qtdAdj++;
+        printf("\n");
+        
+        /*percorre o resto da lista para ver quem mais ainda eh eleito dado o clique atual + novo elemento*/
+        if (cursorLista != NULL) cursorLista = cursorLista->prox;
+        while(cursorLista!=NULL){
+            if (verificaAmizade(lista, cursorLista->id, listaClique->id)) 
+            {
+
+                novaListaClique = (Adj *)pushAdjNo(novaListaClique, cursorLista->id);
+                
+            }
+            cursorLista = cursorLista->prox;
         }
+        printf("Coloca na novaListaClique:");
+        imprimeAdjNo((Adj *) novaListaClique);
+        printf("\n");
         
-    
-    
-    
-    
+        
+        buscaClique(lista, clique, (Adj *) novaListaClique);
+        printf("Pop no %d\n", listaClique->id);
+        popAdj(clique, listaClique->id);
+        
+        listaClique = listaClique->prox;
+        
+        
     
     }
-     
+    
+    printf("\nFim de iteracao por exaustao de elementos, subindo\n");
     
     
+}
+/*
+1 = amigos
+0 = nao amigos
+requer lista nao ordenada, com id do aluno casando com indice do vetor
+*/
+int verificaAmizade(Aluno *lista, int amigo1, int amigo2) {
+    
+    Adj *cursor = NULL;
+    cursor =  (Adj *)lista[amigo1 - 1].adj;
+    while(cursor!=NULL) {
+        if(cursor->id == amigo2) {
+            return 1;
+        }   
+        cursor = cursor->prox;
+    }
+    return 0;
+}
+
+void imprimeAdj(Aluno aluno) {
+    Adj *cursor = NULL;
+    cursor = (Adj *)aluno.adj;
+    while(cursor != NULL) {
+        printf("->%d", cursor->id);
+        cursor = (Adj *)cursor->prox;
+    }
+}
+
+void imprimeAdjNo(Adj *adjLista) {
+    while(adjLista != NULL) {
+        printf("->%d", adjLista->id);
+        adjLista = adjLista->prox;
+    }
+}
+
+Adj *pushAdjNo(Adj *adj, int id) {
+    Adj *aux1 = NULL;
+    Adj *inicio = adj;
+    if(adj == NULL) {
+        aux1  = malloc(sizeof(Adj));
+        aux1->id = id;
+        aux1->prox = NULL;
+        return aux1;
+    }
+    
+    while(adj->prox != NULL){
+        adj = (Adj *)adj->prox;
+    }
+    aux1  = malloc(sizeof(Adj));
+    aux1->id = id;
+    aux1->prox = NULL;
+    adj->prox = (Adj *)aux1;
+    
+    return inicio;
+    
+}
+
+Adj *popAdjNo(Adj *adj, int id) {
+    Adj *inicio = (Adj *) adj;
+    Adj *aux = NULL;
+    if(adj->prox == NULL) {
+        free(adj);
+        return NULL;
+    }
+    aux = adj->prox;
+    while(aux->id != id) {
+        adj = (Adj *)adj->prox;
+        aux = (Adj *)adj->prox;
+    }
+    aux = (Adj *)adj->prox;
+    adj->prox = (Adj *)aux->prox;
+    free (aux);
+    
+    return inicio;
+    
+}
+
+Adj *copiaListaAdj(Adj *inicial) {
+    Adj *nova = NULL;
+    while(inicial!= NULL) {
+        nova = pushAdjNo(inicial, inicial->id);
+        inicial = inicial->prox;
+        
+    }
+    return nova;
+
 }
