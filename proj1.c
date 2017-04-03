@@ -66,6 +66,7 @@ void imprimeAdjNo(Adj *);
 void imprimeAdj(Aluno);
 Adj *pushAdjNo(Adj *, int);
 Adj *popAdjNo(Adj *, int);
+Adj *copiaListaAdj(Adj *);
 
 int maiorGrau;
 Aluno maiorCliqueEncontrado;
@@ -386,11 +387,13 @@ void buscaClique(Aluno *lista, Aluno *clique, Adj *listaClique) {
     if(listaClique == NULL) {
         printf("Esta iteracao eh folha, dando backtrack\n##########\n");
         
-        /*verifica se encontrou o maior clique ate o momento* /
+        /*verifica se encontrou o maior clique ate o momento*/
         if(clique->qtdAdj > maiorCliqueEncontrado.qtdAdj) {
-            maiorCliqueEncontrado.adj = (Adj *) clique->adj;
+            Adj *copia = copiaListaAdj(clique->adj);
+            printf("Travei aqui");
+            maiorCliqueEncontrado.adj = copia;
             maiorCliqueEncontrado.qtdAdj = clique->qtdAdj;
-        }*/
+        }
         
         return;        
     }
@@ -516,9 +519,11 @@ Adj *popAdjNo(Adj *adj, int id) {
 
 Adj *copiaListaAdj(Adj *inicial) {
     Adj *nova = NULL;
-    while(inicial!= NULL) {
-        nova = pushAdjNo(inicial, inicial->id);
-        inicial = inicial->prox;
+    Adj *cursor = inicial;
+    while(cursor!= NULL) {
+        printf("//id=%d//", cursor->id);
+        nova = pushAdjNo(nova, cursor->id);
+        cursor = cursor->prox;
         
     }
     return nova;
