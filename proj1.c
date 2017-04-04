@@ -13,11 +13,8 @@ DISCENTES:
 GUILHERME GOMES PRANDI 15/0128274
 MIGUEL A. MONTAGNER FILHO 13/0127302
 
-*/
+COMPILADO UTILIZANDO gcc -ansi -Wall
 
-/*
-TODO: SORT POR QTDADJ
-TODO: VERIFICACAO MAIOR CLIQUE
 */
 
 
@@ -66,6 +63,7 @@ Adj *pushAdjNo(Adj *, int);
 Adj *popAdjNo(Adj *, int);
 Adj *copiaListaAdj(Adj *);
 
+/*Declaracao de globais*/
 int maiorGrau;
 Aluno maiorCliqueEncontrado;
 
@@ -78,6 +76,10 @@ VETOR ALUNO     LISTA ADJACENCIA
     0               ->3->5->8->NULL
     1               ->2->18->NULL
     ...             ...
+    
+A UTILIZACAO DE UM VETOR FOI ESCOLHIDA PARA PROMOVER MELHOR DESEMPENHO 
+NOS ACESSOS A LISTA, POIS O ID CONTIDO EM CADA NO PODE SER UTILIZADO PARA
+UM ACESSO DIRETO, SEM NECESSIDADE DE PERCORRER TODA A LISTA PARA ENCONTRA-LO
 */
 
 /*FUNCAO MAIN*/
@@ -307,14 +309,16 @@ void Ordena(Aluno *lista)
         }
     }
 }
+
+
 /*
+imprime a lista toda, de formas diferentes dependendo do parametro
 arg:
 n = normal
 l = um por linha
 
 default: normal
 */
-
 void Imprime(Aluno *lista, char arg)
 {
     int i;
@@ -341,6 +345,7 @@ void Imprime(Aluno *lista, char arg)
         printf("grau=%d\n\n", lista[i].qtdAdj);
     }
 }
+
 /*Funcao que prepara as chamadas iniciais da funcao recursiva buscaClique*/
 Adj *maiorClique(Aluno *lista){
 
@@ -425,9 +430,11 @@ void buscaClique(Aluno *lista, Aluno *clique, Adj *listaClique) {
         clique->qtdAdj++;
 
         
-        /*verifica os amigos deste novo elemento dentro da listaClique*/
+        /*anda na lista, para comparar apenas com os proximos, pois qualquer permutacao entre o aluno sendo testado com os anteriores da lista ja foi feito em iteracoes anteriores*/
         if (cursorLista != NULL) cursorLista = cursorLista->prox;
+        /*verifica os amigos deste novo elemento dentro da listaClique*/        
         while(cursorLista!=NULL){
+            
             if (verificaAmizade(lista, cursorLista->id, listaClique->id)) 
             {
 
