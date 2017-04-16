@@ -1,0 +1,85 @@
+Linguagens de Programacao#Compiladores e
+Software Basico#Compiladores e
+Automatos e Computabilidade#Compiladores
+
+Estrutura de Dados#Redes de Computadores e
+Calculo 1 Calculo 2#Redes de Computadores e
+Probabilidade e Estatistica#Redes de Computadores
+
+Organizacao e Arquitetura de Computadores#Programacao Concorrente e
+Tecnicas de Programacao 2#Programacao Concorrente
+
+Organizacao e Arquitetura de Computadores#Software Basico e
+Estrutura de Dados#Software Basico
+
+Teoria dos Numeros#Automatos e Computabilidade ou
+Algebra 1#Automatos e Computabilidade
+
+Logica Computacional 1#Introducao a Inteligência Artificial e
+Estrutura de Dados#Introducao a Inteligência Artificial
+
+Estrutura de Dados#Computacao Experimental e
+Probabilidade e Estatistica#Computacao Experimental
+
+Redes de Computadores#Segurança Computacional ou
+Transmissão de Dados#Segurança Computacional
+
+Estrutura de Dados#Organizacao de Arquivos e
+Probabilidade e Estatistica#Organizacao de Arquivos
+
+Linguagens de Programacao#Engenharia de Software ou
+Tecnicas de Programacao 1#Engenharia de Software
+
+Estrutura de Dados#Sistemas da Informacao OU
+Banco de Dados#Sistemas da Informacao
+
+Estrutura de Dados#Projeto e Analise de Algoritmos ou
+Tecnicas de Programacao 1#Projeto e Analise de Algoritmos
+
+Programacao Concorrente#Fundamentos de Sistemas Operacionais
+
+Circuitos Digitais#Organizacao e Arquitetura de Computadores
+
+Organizacao de Arquivos#Banco de Dados
+
+Estrutura de Dados#Linguagens de Programacao
+
+Algoritmo e Programacao de Computadores#Estrutura de Dados
+
+Calculo 1#Probabilidade e Estatistica
+
+Estrutura de Dados#Teoria e Aplicacao de Grafos
+
+Calculo 2#Calculo Numerico
+
+Calculo 1#Calculo 2
+
+Tecnicas de Programacao 1#Tecnicas de Programacao 2
+
+Trabalho de Graduação 1#Trabalho de Graduação 2
+
+Trabalho de Graduação 2#Metodologia Científica
+
+Circuitos Digitais
+
+Introducao a Algebra Linear
+
+Logica Computacional 1
+
+Tecnicas de Programacao 1
+
+Calculo 1
+
+Trabalho de Graduação 1
+
+Introducao aos Sistemas Computacionais
+
+Fundamentos Teoricos da Computacao
+
+Algoritmos e Programacao de Computadores
+
+Informatica e Sociedade
+
+Algebra 1
+
+Teoria dos Numeros
