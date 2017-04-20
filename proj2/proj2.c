@@ -32,31 +32,30 @@ typedef struct
 {
     int id;
     char nome[30];
-    char matricula[10];
     int qtdAdj;
     struct Adj *adj;
 
-} Aluno;
+} Disciplina;
 
 
 
-/*define numero de alunos*/
-#define NUM_ALUNOS 39
-/*define tamanho max de cada linha do arquivo alunos.txt*/
+/*define numero de disciplinas*/
+#define NUM_DISC 36
+/*define tamanho max de cada linha do arquivo de entrada*/
 #define TAM_LINHA 100
 /*Nome do arquivo a ser lido*/
-#define NOME_ARQUIVO "fluxoCIC.txt"
+#define NOME_ARQUIVO "disciplinas.txt"
 
 /*CABECALHO DE FUNCOES*/
-int povoaLista (Aluno *);
-void pushAdj(Aluno *, int);
+int povoaLista (Disciplina *);
+void pushAdj(Disciplina *, int);
 void freeAdj(Adj *);
-void freeLista(Aluno *);
-void Imprime(Aluno *, char);
-void Ordena(Aluno *);
-void popAdj(Aluno *, int);
-int verificaAmizade(Aluno *, int, int);
-void imprimeAdj(Aluno *, Aluno);
+void freeLista(Disciplina *);
+void Imprime(Disciplina *, char);
+void Ordena(Disciplina *);
+void popAdj(Disciplina *, int);
+int verificaAmizade(Disciplina *, int, int);
+void imprimeAdj(Disciplina *, Disciplina);
 Adj *pushAdjNo(Adj *, int);
 Adj *popAdjNo(Adj *, int);
 Adj *copiaListaAdj(Adj *);
@@ -67,9 +66,9 @@ int maiorGrau;
 
 /*
 ESTRUTURA DE DADOS UTILIZADA:
-VETOR DE CABECAS (STRUCT ALUNO) DE LISTA (STRUCT ADJ)
+VETOR DE CABECAS (STRUCT Disciplina) DE LISTA (STRUCT ADJ)
 EXEMPLO:
-VETOR ALUNO     LISTA ADJACENCIA
+VETOR Disciplina     LISTA ADJACENCIA
     0               ->3->5->8->NULL
     1               ->2->18->NULL
     ...             ...
@@ -83,24 +82,17 @@ UM ACESSO DIRETO, SEM NECESSIDADE DE PERCORRER TODA A LISTA PARA ENCONTRA-LO
 int main () {
 
 
-    /*declara vetor de ponteiros para Aluno*/
-    Aluno *lista;
+    /*declara vetor de ponteiros para Disciplina*/
+    Disciplina *lista;
 
-    /*Inicializa globais*/
-    //maiorGrau = 0;
-    //maiorCliqueEncontrado.nome[0] = 'M';
-    //maiorCliqueEncontrado.nome[1] = '\0';
-    //maiorCliqueEncontrado.qtdAdj = 0;
-    //maiorCliqueEncontrado.adj = NULL;
-    //maiorCliqueEncontrado.id = 0;
-    //maiorCliqueEncontrado.matricula[0] = '\0';
+
 
     /*Imprime mensagens guia*/
-    printf("Ola, este programa pega o arquivo 'fluxoCIC.txt' e:\n(1)Analisa maior clique e imprime na saida padrao\n(2)Contabiliza grau de cada vertice\n(3)Ordena vertices pelo grau deles\n(4)Imprime na saida padrao a lista ordenada\n#########\nIniciando povoamento da lista...");
+    printf("Ola, este programa pega o arquivo 'disciplinas.txt' e:\n(1) Carrega o Grafo com Lista de Adjacencia das Disciplinas e seus pre-requisitos.");
 
 
-    /*aloca memoria necessaria para o vetor de Aluno*/
-    lista = calloc(NUM_ALUNOS, sizeof(Aluno));
+    /*aloca memoria necessaria para o vetor de Disciplina*/
+    lista = calloc(NUM_DISC, sizeof(Disciplina));
 
     /*Procura no arquivo os vertices, colocando suas adjacencias*/
     if (!povoaLista(lista)) {
@@ -109,15 +101,10 @@ int main () {
         return -1;
     };
 
-    printf("SUCESSO\n########\nCalculando maior clique...");
-    /*chama a funcao maiorClique, recebendo o vetor de cabecas de lista*/
-    //maiorClique(lista);
-    printf("SUCESSO\n");
-    printf("Elementos do maior clique: ");
 
 
 
-    printf("\n########\n\nPressione ENTER para imprimir a lista ordenada");
+    printf("\n\nPressione ENTER para imprimir a lista de disciplinas");
     getchar();
 
     /*Ordena a lista com bubbleSort*/
@@ -134,11 +121,11 @@ int main () {
 }
 
 
-/*Percorre o arquivo alunos.txt e povoa a lista de adjacencia*/
-int povoaLista(Aluno *lista) {
+/*Percorre o arquivo Disciplinas.txt e povoa a lista de adjacencia*/
+int povoaLista(Disciplina *lista) {
 
     /*declara e inicializa variaveis a serem utilizadas*/
-    FILE *arqAlunos = NULL;
+    FILE *arqDisciplinas = NULL;
     char linhaAtual[TAM_LINHA];
     int i = 0;
     int idAdj = 0;
@@ -147,39 +134,39 @@ int povoaLista(Aluno *lista) {
 
 
     /*Abre arquivo com nomes e matriculas, em modo leitura*/
-    arqAlunos = fopen(NOME_ARQUIVO, "r");
-    if (arqAlunos == NULL) {
-        printf("\nERRO: Arquivo alunos.txt nao encontrado\n");
+    arqDisciplinas = fopen(NOME_ARQUIVO, "r");
+    if (arqDisciplinas == NULL) {
+        printf("\nERRO: Arquivo Disciplinas.txt nao encontrado\n");
         return -1;
     }
 
     /*
-    percorre o arquivo alunos.txt
+    percorre o arquivo Disciplinas.txt
     vai de linha em linha, colocando em uma string, supondo formato nome#matricula#idAdj1#idAdj2#...#idAdjn#\n
-    percorre ate chegar a NUM_ALUNOS ou EOF (feof == 0)
+    percorre ate chegar a NUM_DISC ou EOF (feof == 0)
     a cada iteracao, aloca espaco para novo vertice e atribui a ele os valores lidos, e depois adiciona suas adjacencias
-    supoe id do aluno a partir da ordem de entrada
+    supoe id do Disciplina a partir da ordem de entrada
 
     */
     /*
     no for, primeira condicao de saida verifica se houve erro
-    segunda condicao se ja leu todos os alunos registrados
+    segunda condicao se ja leu todos os Disciplinas registrados
     terceira se chegou no final do arquivo
     */
-    for(i = 0;(i < NUM_ALUNOS) && fgets(linhaAtual, TAM_LINHA, arqAlunos) != NULL; i++) {
+    for(i = 0;(i < NUM_DISC) && fgets(linhaAtual, TAM_LINHA, arqDisciplinas) != NULL; i++) {
 
         /*declara o offselinha, pois o arquivo sera lido linha a linha, e esta variavel ira funcionar como forma de apontar para o caracter a ser lido*/
         offsetLinha = 0;
 
-        /*coloca o id do aluno*/
+        /*coloca o id do Disciplina*/
         lista[i].id = i+1;
         lista[i].qtdAdj = 0;
-        sscanf(linhaAtual, "%[a-zA-Z ]#%9[0-9][^#]#", lista[i].nome, lista[i].matricula);
+        sscanf(linhaAtual, "%9[0-9][^#]#", lista[i].nome);
         /*calcula o novo offset, dado que foi lido nome e matricula*/
 
 
 
-        offsetLinha = strlen(lista[i].nome) + strlen(lista[i].matricula) + 2;
+        offsetLinha = strlen(lista[i].nome) + 1;
 
         /*Le os adjacentes, e sai povoando a lista de adjacencia*/
         while(sscanf(&linhaAtual[offsetLinha],"%d#", &idAdj) == 1) {
@@ -200,17 +187,17 @@ int povoaLista(Aluno *lista) {
 }
 
 
-/*Recebe um aluno por referencia, cria um novo Adj e coloca no inicio da lista apontada pelo Aluno.adj*/
-void pushAdj(Aluno *cabeca, int id) {
+/*Recebe um Disciplina por referencia, cria um novo Adj e coloca no inicio da lista apontada pela Disciplina.adj*/
+void pushAdj(Disciplina *cabeca, int id) {
 
     /*aloca espaco para novo vertice*/
     Adj *adjTemp = malloc(sizeof(Adj));
 
     /*coloca valor do id*/
     adjTemp->id = id;
-    /*aponta o prox do novo vertice para o primeiro elemento da lista de adjacencia do aluno*/
+    /*aponta o prox do novo vertice para o primeiro elemento da lista de adjacencia da disciplina*/
     adjTemp->prox = cabeca->adj;
-    /*aponta primeiro elemento da lista de adj do aluno para novo vertice*/
+    /*aponta primeiro elemento da lista de adj da disciplina para novo vertice*/
     cabeca->adj = (Adj *)adjTemp;
 
 
@@ -218,7 +205,7 @@ void pushAdj(Aluno *cabeca, int id) {
 }
 
 /*procura na lista dada pela cabeca e tira da lista*/
-void popAdj(Aluno *cabeca, int id) {
+void popAdj(Disciplina *cabeca, int id) {
 
     Adj *adjTemp = (Adj *) cabeca->adj;
     Adj *adjAnterior = adjTemp;
@@ -262,10 +249,10 @@ void freeAdj(Adj *adj) {
     }
 
 }
-void freeLista(Aluno *lista) {
+void freeLista(Disciplina *lista) {
     int i;
     /*Libera a lista de adjacencia primeiro*/
-    for(i = 0; i < NUM_ALUNOS; i++) {
+    for(i = 0; i < NUM_DISC; i++) {
         freeAdj((Adj *)lista[i].adj);
     }
     /*Finalmente libera o vetor*/
@@ -275,30 +262,27 @@ void freeLista(Aluno *lista) {
 /*
 Utiliza o algoritmo bubblesort, pela simplicidade de implementacao
 */
-void Ordena(Aluno *lista)
+void Ordena(Disciplina *lista)
 {
     int i,j;
     int idTemp, qtdAdjTemp;
-    char nomeTemp[30], matriculaTemp[10];
-    for(j=0;j<NUM_ALUNOS;j++)
+    char nomeTemp[30];
+    for(j=0;j<NUM_DISC;j++)
     {
-        for(i=j+1;i<NUM_ALUNOS;i++)
+        for(i=j+1;i<NUM_DISC;i++)
         {
             if(lista[j].qtdAdj < lista[i].qtdAdj)
             {
                 idTemp = lista[j].id;
                 strcpy(nomeTemp, lista[j].nome);
-                strcpy(matriculaTemp, lista[j].matricula);
                 qtdAdjTemp = lista[j].qtdAdj;
 
                 lista[j].id = lista[i].id;
                 strcpy(lista[j].nome, lista[i].nome);
-                strcpy(lista[j].matricula, lista[i].matricula);
                 lista[j].qtdAdj = lista[i].qtdAdj;
 
                 lista[i].id = idTemp;
                 strcpy(lista[i].nome, nomeTemp);
-                strcpy(lista[i].matricula, matriculaTemp);
                 lista[i].qtdAdj = qtdAdjTemp;
             }
         }
@@ -314,37 +298,35 @@ l = um por linha
 
 default: normal
 */
-void Imprime(Aluno *lista, char arg)
+void Imprime(Disciplina *lista, char arg)
 {
     int i;
 
     if (arg == 'l')
     {
-        printf("ID  NOME                  MATRICULA  GRAU\n");
-        for(i=0;i<NUM_ALUNOS;i++)
+        printf("ID  DISCIPLINA            GRAU\n");
+        for(i=0;i<NUM_DISC;i++)
         {
 
             printf("%02d||",lista[i].id);
             printf("%-20s||", lista[i].nome);
-            printf("%s||", lista[i].matricula);
             printf(" %02d ||\n", lista[i].qtdAdj);
         }
         /*Volta para a funcao chamadora*/
         return;
     }
-    for(i=0;i<NUM_ALUNOS;i++)
+    for(i=0;i<NUM_DISC;i++)
     {
         printf("id=%d\n",lista[i].id);
         printf("nome=%s\n", lista[i].nome);
-        printf("matricula=%s\n", lista[i].matricula);
         printf("grau=%d\n\n", lista[i].qtdAdj);
     }
 }
 
 
-void imprimeAdj(Aluno *lista, Aluno aluno) {
+void imprimeAdj(Disciplina *lista, Disciplina materia) {
     Adj *cursor = NULL;
-    cursor = (Adj *)aluno.adj;
+    cursor = (Adj *)materia.adj;
     while(cursor != NULL) {
         printf("\n(%d)%s", cursor->id, lista[cursor->id - 1].nome);
         cursor = (Adj *)cursor->prox;
