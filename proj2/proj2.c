@@ -33,6 +33,8 @@ typedef struct
 {
     int id;
     char codigo[6];
+    int cred;
+    float dific;
     int qtdAdj;
     struct Adj *adj;
 
@@ -55,11 +57,10 @@ void freeLista(Aluno *);
 void Imprime(Aluno *, char);
 void Ordena(Aluno *);
 void popAdj(Aluno *, int);
-int verificaAmizade(Aluno *, int, int);
-void imprimeAdj(Aluno *, Aluno);
 Adj *pushAdjNo(Adj *, int);
 Adj *popAdjNo(Adj *, int);
 Adj *copiaListaAdj(Adj *);
+void imprimeAdjacencias(Adj *);
 
 /*Declaracao de globais*/
 int maiorGrau;
@@ -81,7 +82,6 @@ UM ACESSO DIRETO, SEM NECESSIDADE DE PERCORRER TODA A LISTA PARA ENCONTRA-LO
 
 /*FUNCAO MAIN*/
 int main () {
-
 
     /*declara vetor de ponteiros para Aluno*/
     Aluno *lista;
@@ -105,7 +105,7 @@ int main () {
 
 
 
-    printf("\n########\n\nPressione ENTER para imprimir o grafo ordenado");
+    printf("\n########\n\nPressione ENTER para imprimir o grafo ordenado\n");
     getchar();
 
     /*Ordena a lista com bubbleSort*/
@@ -162,12 +162,12 @@ int povoaLista(Aluno *lista) {
         /*coloca o id do aluno*/
         lista[i].id = i+1;
         lista[i].qtdAdj = 0;
-        sscanf(linhaAtual, "%9[0-9][^#]#", lista[i].codigo);
+        sscanf(linhaAtual, "%[0-9]#%d#%f[^#]#", lista[i].codigo, &lista[i].cred, &lista[i].dific);
         /*calcula o novo offset, dado que foi lido nome e matricula*/
 
 
 
-        offsetLinha = strlen(lista[i].codigo) + 2;
+        offsetLinha = strlen(lista[i].codigo) + 7;
 
         /*Le os adjacentes, e sai povoando a lista de adjacencia*/
         while(sscanf(&linhaAtual[offsetLinha],"%d#", &idAdj) == 1) {
@@ -179,10 +179,6 @@ int povoaLista(Aluno *lista) {
            for(;linhaAtual[offsetLinha] != '#' || strlen(&linhaAtual[offsetLinha]) == 0; offsetLinha++);
            offsetLinha++;
         }
-
-
-
-
     }
     return i;
 }
@@ -267,6 +263,7 @@ void Ordena(Aluno *lista)
 {
     int i,j;
     int idTemp, qtdAdjTemp;
+    Adj *adjTemp;
     char codigoTemp[30], matriculaTemp[10];
     for(j=0;j<NUM_ALUNOS;j++)
     {
@@ -277,14 +274,17 @@ void Ordena(Aluno *lista)
                 idTemp = lista[j].id;
                 strcpy(codigoTemp, lista[j].codigo);
                 qtdAdjTemp = lista[j].qtdAdj;
+                adjTemp = lista[j].adj;
 
                 lista[j].id = lista[i].id;
                 strcpy(lista[j].codigo, lista[i].codigo);
                 lista[j].qtdAdj = lista[i].qtdAdj;
+                lista[j].adj = lista[i].adj;
 
                 lista[i].id = idTemp;
                 strcpy(lista[i].codigo, codigoTemp);
                 lista[i].qtdAdj = qtdAdjTemp;
+                lista[i].adj = adjTemp;
             }
         }
     }
@@ -305,13 +305,15 @@ void Imprime(Aluno *lista, char arg)
 
     if (arg == 'l')
     {
-        printf("ID  CODIGO                GRAU\n");
+        printf("DISCIPLINA  CRED   DIF    GRAU   ADJACENCIA\n");
         for(i=0;i<NUM_ALUNOS;i++)
         {
-
-            printf("%02d||",lista[i].id);
-            printf("%-20s||", lista[i].codigo);
-            printf(" %02d ||\n", lista[i].qtdAdj);
+            printf("|| %s ||", lista[i].codigo);
+            printf("% d  ||", lista[i].cred);
+            printf("% .1f  ||", lista[i].dific);
+            printf(" %02d ||", lista[i].qtdAdj);
+            imprimeAdjacencias(lista[i].adj);
+            printf("\n");
         }
         /*Volta para a funcao chamadora*/
         return;
@@ -323,36 +325,6 @@ void Imprime(Aluno *lista, char arg)
         printf("grau=%d\n\n", lista[i].qtdAdj);
     }
 }
-
-
-
-/*
-1 = amigos
-0 = nao amigos
-requer lista nao ordenada, com id do aluno casando com indice do vetor
-*/
-int verificaAmizade(Aluno *lista, int amigo1, int amigo2) {
-
-    Adj *cursor = NULL;
-    cursor =  (Adj *)lista[amigo1 - 1].adj;
-    while(cursor!=NULL) {
-        if(cursor->id == amigo2) {
-            return 1;
-        }
-        cursor = cursor->prox;
-    }
-    return 0;
-}
-
-void imprimeAdj(Aluno *lista, Aluno aluno) {
-    Adj *cursor = NULL;
-    cursor = (Adj *)aluno.adj;
-    while(cursor != NULL) {
-        printf("\n(%d)%s", cursor->id, lista[cursor->id - 1].codigo);
-        cursor = (Adj *)cursor->prox;
-    }
-}
-
 
 
 Adj *pushAdjNo(Adj *adj, int id) {
@@ -407,4 +379,16 @@ Adj *copiaListaAdj(Adj *inicial) {
     }
     return nova;
 
+}
+
+void imprimeAdjacencias(Adj *lista)
+{
+    Adj *temp;
+    temp = lista;
+    while(temp!=NULL)
+    {
+       printf("->%d", temp->id);
+       temp = temp->prox;
+    }
+    printf("\n");
 }
